@@ -13,7 +13,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div className="space-y-4">
           <h2 className="text-heading-2">Just Do It</h2>
           <p className="max-w-md text-lead text-light-300">
-            Join millions of athletes and fitness enthusiasts who trust Nike for their performance needs.
+            Join millions of Gadget enthusiasts who trust ONE STOP SHOP for their performance needs.
           </p>
           <div className="flex gap-2" aria-hidden="true">
             <span className="h-2 w-2 rounded-full bg-light-100/90" />
@@ -22,7 +22,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           </div>
         </div>
 
-        <p className="text-footnote text-light-400">© 2025 Nike. All rights reserved.</p>
+        <p className="text-footnote text-light-400">© 2026 ONE STOP SHOP. All rights reserved.</p>
       </section>
 
       <section className="flex items-center justify-center px-4 py-10 sm:px-6 lg:px-8">

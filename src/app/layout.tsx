@@ -8,7 +8,7 @@ const jost = Jost({
 });
 
 export const metadata: Metadata = {
-  title: "Nike",
+  title: "ONE STOP SHOP",
   description: "An e-commerce platform for Nike shoes",
 };
 
