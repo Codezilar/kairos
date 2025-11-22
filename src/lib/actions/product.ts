@@ -12,17 +12,17 @@ import {
   productVariants,
   products,
   sizes,
-  colors,
   users,
   reviews,
+  conditions,
   type SelectProduct,
   type SelectVariant,
   type SelectProductImage,
   type SelectBrand,
   type SelectCategory,
   type SelectGender,
-  type SelectColor,
   type SelectSize,
+  type SelectCondition,
 } from "@/lib/db/schema";
 
 import { NormalizedProductFilters } from "@/lib/utils/query";
@@ -63,7 +63,7 @@ export async function getAllProducts(filters: NormalizedProductFilters): Promise
   }
 
   const hasSize = filters.sizeSlugs.length > 0;
-  const hasColor = filters.colorSlugs.length > 0;
+  const hasCondition = filters.conditionSlugs.length > 0;
   const hasPrice = !!(filters.priceMin !== undefined || filters.priceMax !== undefined || filters.priceRanges.length);
 
   const variantConds: SQL[] = [];
@@ -73,11 +73,13 @@ export async function getAllProducts(filters: NormalizedProductFilters): Promise
       .from(sizes)
       .where(inArray(sizes.slug, filters.sizeSlugs))));
   }
-  if (hasColor) {
-    variantConds.push(inArray(productVariants.colorId, db
-      .select({ id: colors.id })
-      .from(colors)
-      .where(inArray(colors.slug, filters.colorSlugs))));
+  if (hasCondition) {
+    variantConds.push(
+      inArray(
+        productVariants.conditionId,
+        db.select({ id: conditions.id }).from(conditions).where(inArray(conditions.slug, filters.conditionSlugs))
+      )
+    );
   }
   if (hasPrice) {
     const priceBounds: SQL[] = [];
@@ -109,13 +111,13 @@ export async function getAllProducts(filters: NormalizedProductFilters): Promise
       variantId: productVariants.id,
       productId: productVariants.productId,
       price: sql<number>`${productVariants.price}::numeric`.as("price"),
-      colorId: productVariants.colorId,
+      conditionId: productVariants.conditionId,
       sizeId: productVariants.sizeId,
     })
     .from(productVariants)
     .where(variantConds.length ? and(...variantConds) : undefined)
     .as("v");
-  const imagesJoin = hasColor
+  const imagesJoin = hasCondition
     ? db
         .select({
           productId: productImages.productId,
@@ -126,8 +128,8 @@ export async function getAllProducts(filters: NormalizedProductFilters): Promise
         .innerJoin(productVariants, eq(productVariants.id, productImages.variantId))
         .where(
           inArray(
-            productVariants.colorId,
-            db.select({ id: colors.id }).from(colors).where(inArray(colors.slug, filters.colorSlugs))
+            productVariants.conditionId,
+            db.select({ id: conditions.id }).from(conditions).where(inArray(conditions.slug, filters.conditionSlugs))
           )
         )
         .as("pi")
@@ -201,7 +203,7 @@ export async function getAllProducts(filters: NormalizedProductFilters): Promise
     minPrice: r.minPrice === null ? null : Number(r.minPrice),
     maxPrice: r.maxPrice === null ? null : Number(r.maxPrice),
     createdAt: r.createdAt,
-    subtitle: r.subtitle ? `${r.subtitle} Shoes` : null,
+    subtitle: r.subtitle ? r.subtitle : null,
   }));
 
   const totalCount = countRows[0]?.cnt ?? 0;
@@ -217,7 +219,7 @@ export type FullProduct = {
   };
   variants: Array<
     SelectVariant & {
-      color?: SelectColor | null;
+      condition?: SelectCondition | null;
       size?: SelectSize | null;
     }
   >;
@@ -255,14 +257,13 @@ export async function getProduct(productId: string): Promise<FullProduct | null>
       variantSku: productVariants.sku,
       variantPrice: sql<number | null>`${productVariants.price}::numeric`,
       variantSalePrice: sql<number | null>`${productVariants.salePrice}::numeric`,
-      variantColorId: productVariants.colorId,
+      variantConditionId: productVariants.conditionId,
       variantSizeId: productVariants.sizeId,
       variantInStock: productVariants.inStock,
 
-      colorId: colors.id,
-      colorName: colors.name,
-      colorSlug: colors.slug,
-      colorHex: colors.hexCode,
+      conditionId: conditions.id,
+      conditionName: conditions.name,
+      conditionSlug: conditions.slug,
 
       sizeId: sizes.id,
       sizeName: sizes.name,
@@ -280,7 +281,7 @@ export async function getProduct(productId: string): Promise<FullProduct | null>
     .leftJoin(categories, eq(categories.id, products.categoryId))
     .leftJoin(genders, eq(genders.id, products.genderId))
     .leftJoin(productVariants, eq(productVariants.productId, products.id))
-    .leftJoin(colors, eq(colors.id, productVariants.colorId))
+    .leftJoin(conditions, eq(conditions.id, productVariants.conditionId))
     .leftJoin(sizes, eq(sizes.id, productVariants.sizeId))
     .leftJoin(productImages, eq(productImages.productId, products.id))
     .where(eq(products.id, productId));
@@ -340,18 +341,17 @@ export async function getProduct(productId: string): Promise<FullProduct | null>
         sku: r.variantSku!,
         price: r.variantPrice !== null ? String(r.variantPrice) : "0",
         salePrice: r.variantSalePrice !== null ? String(r.variantSalePrice) : null,
-        colorId: r.variantColorId!,
+        conditionId: r.variantConditionId!,
         sizeId: r.variantSizeId!,
         inStock: r.variantInStock!,
         weight: null,
         dimensions: null,
         createdAt: head.productCreatedAt,
-        color: r.colorId
+        condition: r.conditionId
           ? {
-              id: r.colorId,
-              name: r.colorName!,
-              slug: r.colorSlug!,
-              hexCode: r.colorHex!,
+              id: r.conditionId,
+              name: r.conditionName!,
+              slug: r.conditionSlug!,
             }
           : null,
         size: r.sizeId

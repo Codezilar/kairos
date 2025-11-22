@@ -82,7 +82,7 @@ export type NormalizedProductFilters = {
   search?: string;
   genderSlugs: string[];
   sizeSlugs: string[];
-  colorSlugs: string[];
+  conditionSlugs: string[];
   brandSlugs: string[];
   categorySlugs: string[];
   priceMin?: number;
@@ -109,9 +109,10 @@ export function parseFilterParams(sp: Record<string, string | string[] | undefin
 
   const search = getStr("search")?.trim() || undefined;
 
-  const genderSlugs = getArr("gender").map((s) => s.toLowerCase());
+  // map new UI params to existing normalized filter fields
+  const genderSlugs = getArr("type").length ? getArr("type").map((s) => s.toLowerCase()) : getArr("gender").map((s) => s.toLowerCase());
   const sizeSlugs = getArr("size").map((s) => s.toLowerCase());
-  const colorSlugs = getArr("color").map((s) => s.toLowerCase());
+  const conditionSlugs = getArr("condition").map((s) => s.toLowerCase());
   const brandSlugs = getArr("brand").map((s) => s.toLowerCase());
   const categorySlugs = getArr("category").map((s) => s.toLowerCase());
 
@@ -145,7 +146,7 @@ export function parseFilterParams(sp: Record<string, string | string[] | undefin
     search,
     genderSlugs,
     sizeSlugs,
-    colorSlugs,
+    conditionSlugs,
     brandSlugs,
     categorySlugs,
     priceMin: priceMin !== undefined && !Number.isNaN(priceMin) ? priceMin : undefined,

@@ -17,12 +17,14 @@ export default async function ProductsPage({
   const { products, totalCount } = await getAllProducts(parsed);
 
   const activeBadges: string[] = [];
-  (sp.gender ? (Array.isArray(sp.gender) ? sp.gender : [sp.gender]) : []).forEach((g) =>
+  (sp.type ? (Array.isArray(sp.type) ? sp.type : [sp.type]) : []).forEach((g) =>
     activeBadges.push(String(g)[0].toUpperCase() + String(g).slice(1))
   );
-  (sp.size ? (Array.isArray(sp.size) ? sp.size : [sp.size]) : []).forEach((s) => activeBadges.push(`Size: ${s}`));
-  (sp.color ? (Array.isArray(sp.color) ? sp.color : [sp.color]) : []).forEach((c) =>
-    activeBadges.push(String(c)[0].toUpperCase() + String(c).slice(1))
+  (sp.brand ? (Array.isArray(sp.brand) ? sp.brand : [sp.brand]) : []).forEach((b) =>
+    activeBadges.push(`Brand: ${String(b)[0].toUpperCase() + String(b).slice(1)}`)
+  );
+  (sp.condition ? (Array.isArray(sp.condition) ? sp.condition : [sp.condition]) : []).forEach((c) =>
+    activeBadges.push(`Condition: ${String(c)[0].toUpperCase() + String(c).slice(1)}`)
   );
   (sp.price ? (Array.isArray(sp.price) ? sp.price : [sp.price]) : []).forEach((p) => {
     const [min, max] = String(p).split("-");

@@ -5,8 +5,8 @@ import {getCurrentUser} from "@/lib/auth/actions";
 const products = [
   {
     id: 1,
-    title: "Air Max Pulse",
-    subtitle: "Men's Shoes",
+    title: "Kairos One",
+    subtitle: "Gadgets",
     meta: "6 Colour",
     price: 149.99,
     imageSrc: "/shoes/shoe-1.jpg",
@@ -14,8 +14,8 @@ const products = [
   },
   {
     id: 2,
-    title: "Air Zoom Pegasus",
-    subtitle: "Men's Shoes",
+    title: "Kairos Air",
+    subtitle: "Gadgets",
     meta: "4 Colour",
     price: 129.99,
     imageSrc: "/shoes/shoe-2.webp",
@@ -23,8 +23,8 @@ const products = [
   },
   {
     id: 3,
-    title: "InfinityRN 4",
-    subtitle: "Men's Shoes",
+    title: "Kairos Mini",
+    subtitle: "Gadgets",
     meta: "6 Colour",
     price: 159.99,
     imageSrc: "/shoes/shoe-3.webp",
@@ -32,8 +32,8 @@ const products = [
   },
   {
     id: 4,
-    title: "Metcon 9",
-    subtitle: "Men's Shoes",
+    title: "Kairos Pro",
+    subtitle: "Gadgets",
     meta: "3 Colour",
     price: 139.99,
     imageSrc: "/shoes/shoe-4.webp",
@@ -49,7 +49,7 @@ const Home = async () => {
     <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <section aria-labelledby="latest" className="pb-12">
         <h2 id="latest" className="mb-6 text-heading-3 text-dark-900">
-          Latest shoes
+          Latest Gadgets
         </h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((p) => (

@@ -1,5 +1,5 @@
 {
-  "id": "517dc8ae-deba-4af4-a302-fa94315c2a15",
+  "id": "6d2eefaf-ac6e-442e-9922-66b54123b2cc",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -896,14 +896,14 @@
           "primaryKey": false,
           "notNull": false
         },
-        "color_id": {
-          "name": "color_id",
+        "size_id": {
+          "name": "size_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
-        "size_id": {
-          "name": "size_id",
+        "condition_id": {
+          "name": "condition_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -950,12 +950,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "product_variants_color_id_colors_id_fk": {
-          "name": "product_variants_color_id_colors_id_fk",
+        "product_variants_size_id_sizes_id_fk": {
+          "name": "product_variants_size_id_sizes_id_fk",
           "tableFrom": "product_variants",
-          "tableTo": "colors",
+          "tableTo": "sizes",
           "columnsFrom": [
-            "color_id"
+            "size_id"
           ],
           "columnsTo": [
             "id"
@@ -963,12 +963,12 @@
           "onDelete": "restrict",
           "onUpdate": "no action"
         },
-        "product_variants_size_id_sizes_id_fk": {
-          "name": "product_variants_size_id_sizes_id_fk",
+        "product_variants_condition_id_conditions_id_fk": {
+          "name": "product_variants_condition_id_conditions_id_fk",
           "tableFrom": "product_variants",
-          "tableTo": "sizes",
+          "tableTo": "conditions",
           "columnsFrom": [
-            "size_id"
+            "condition_id"
           ],
           "columnsTo": [
             "id"
@@ -1641,52 +1641,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.colors": {
-      "name": "colors",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "slug": {
-          "name": "slug",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "hex_code": {
-          "name": "hex_code",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "colors_slug_unique": {
-          "name": "colors_slug_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "slug"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.sizes": {
       "name": "sizes",
       "schema": "",
@@ -1729,6 +1683,38 @@
           ]
         }
       },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.conditions": {
+      "name": "conditions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

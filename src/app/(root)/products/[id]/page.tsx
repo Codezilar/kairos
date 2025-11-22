@@ -5,7 +5,7 @@ import { Heart, ShoppingBag, Star } from "lucide-react";
 import ColorSwatches from "@/components/ColorSwatches";
 import { getProduct, getProductReviews, getRecommendedProducts, type Review, type RecommendedProduct } from "@/lib/actions/product";
 
-type GalleryVariant = { color: string; images: string[] };
+type GalleryVariant = { condition: string; images: string[] };
 
 function formatPrice(price: number | null | undefined) {
   if (price === null || price === undefined) return undefined;
@@ -125,7 +125,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
       .map((img) => img.url);
 
     return {
-      color: v.color?.name || "Default",
+      condition: v.condition?.name || "Default",
       images: imgs.length ? imgs : fallback,
     };
   }).filter((gv) => gv.images.length > 0);
@@ -144,8 +144,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
       ? Math.round(((compareAt - displayPrice) / compareAt) * 100)
       : null;
 
-  const subtitle =
-    product.gender?.label ? `${product.gender.label} Shoes` : undefined;
+  const subtitle = product.gender?.label ? product.gender.label : undefined;
 
   return (
     <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -198,7 +197,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           </CollapsibleSection>
 
           <CollapsibleSection title="Shipping & Returns">
-            <p>Free standard shipping and free 30-day returns for Nike Members.</p>
+            <p>Free standard shipping and free 30-day returns for members.</p>
           </CollapsibleSection>
 
           <Suspense

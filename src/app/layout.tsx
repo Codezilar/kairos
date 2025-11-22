@@ -9,7 +9,7 @@ const jost = Jost({
 
 export const metadata: Metadata = {
   title: "ONE STOP SHOP",
-  description: "An e-commerce platform for Nike shoes",
+  description: "An e-commerce platform for gadgets and accessories",
 };
 
 export default function RootShell({

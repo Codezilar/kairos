@@ -2,18 +2,31 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import CATEGORIES from '@/lib/constants/categories';
 
 const NAV_LINKS = [
-  { label: "Men", href: "/products?gender=men" },
-  { label: "Women", href: "/products?gender=women" },
-  { label: "Kids", href: "/products?gender=unisex" },
+  { label: "Categories", href: "#categories" },
   { label: "Collections", href: "/collections" },
   { label: "Contact", href: "/contact" },
 ] as const;
 
+function useOutsideClick(ref: React.RefObject<HTMLElement>, handler: () => void) {
+  useEffect(() => {
+    function onClick(e: MouseEvent) {
+      if (!ref.current) return;
+      if (!ref.current.contains(e.target as Node)) handler();
+    }
+    document.addEventListener('click', onClick);
+    return () => document.removeEventListener('click', onClick);
+  }, [ref, handler]);
+}
+
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [catOpen, setCatOpen] = useState(false);
+  const catRef = useRef<HTMLElement | null>(null);
+  useOutsideClick(catRef, () => setCatOpen(false));
 
   return (
     <header className="sticky top-0 z-50 bg-light-100">
@@ -21,21 +34,46 @@ export default function Navbar() {
         className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8"
         aria-label="Primary"
       >
-        <Link href="/" aria-label="Nike Home" className="flex items-center">
-          <Image src="/logo.svg" alt="Nike" width={28} height={28} priority className="invert" />
+        <Link href="/" aria-label="Kairos Home" className="flex items-center">
+          <Image src="/logo.svg" alt="Kairos" width={28} height={28} priority className="invert" />
         </Link>
 
         <ul className="hidden items-center gap-8 md:flex">
-          {NAV_LINKS.map((l) => (
-            <li key={l.href}>
-              <Link
-                href={l.href}
-                className="text-body text-dark-900 transition-colors hover:text-dark-700"
-              >
-                {l.label}
-              </Link>
-            </li>
-          ))}
+          {NAV_LINKS.map((l) =>
+            l.label === 'Categories' ? (
+              <li key={l.href} ref={catRef} className="relative">
+                <button
+                  onClick={() => setCatOpen((v) => !v)}
+                  aria-expanded={catOpen}
+                  className="text-body text-dark-900 transition-colors hover:text-dark-700"
+                >
+                  Categories
+                </button>
+                {catOpen && (
+                  <div className="absolute left-0 mt-2 w-64 rounded-md bg-light-100 border border-light-300 shadow-lg z-50 p-3">
+                    <ul className="grid grid-cols-1 gap-2">
+                      {CATEGORIES.map((c) => (
+                        <li key={c.slug}>
+                          <Link
+                            href={`/products?type=${c.slug}`}
+                            className="block px-2 py-1 text-body text-dark-900 hover:bg-light-200 rounded"
+                          >
+                            {c.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </li>
+            ) : (
+              <li key={l.href}>
+                <Link href={l.href} className="text-body text-dark-900 transition-colors hover:text-dark-700">
+                  {l.label}
+                </Link>
+              </li>
+            )
+          )}
         </ul>
 
         <div className="hidden items-center gap-6 md:flex">
@@ -66,7 +104,25 @@ export default function Navbar() {
         className={`border-t border-light-300 md:hidden ${open ? "block" : "hidden"}`}
       >
         <ul className="space-y-2 px-4 py-3">
-          {NAV_LINKS.map((l) => (
+          <li>
+            <div className="mb-2">
+              <h4 className="text-body-medium mb-2">Categories</h4>
+              <ul className="grid grid-cols-1 gap-1">
+                {CATEGORIES.map((c) => (
+                  <li key={c.slug}>
+                    <Link
+                      href={`/products?type=${c.slug}`}
+                      className="block py-2 text-body text-dark-900 hover:text-dark-700"
+                      onClick={() => setOpen(false)}
+                    >
+                      {c.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </li>
+          {NAV_LINKS.filter((n) => n.label !== 'Categories').map((l) => (
             <li key={l.href}>
               <Link
                 href={l.href}

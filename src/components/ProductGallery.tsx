@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
 import { useVariantStore } from "@/store/variant";
 
 type Variant = {
-  color: string;
+  condition: string;
   images: string[];
 };
 

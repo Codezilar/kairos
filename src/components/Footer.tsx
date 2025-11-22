@@ -4,19 +4,19 @@ import Link from "next/link";
 const columns = [
   {
     title: "Featured",
-    links: ["Air Force 1", "Huarache", "Air Max 90", "Air Max 95"],
+    links: ["Best Sellers", "New Arrivals", "Top Rated", "Deals"],
   },
   {
-    title: "Shoes",
-    links: ["All Shoes", "Custom Shoes", "Jordan Shoes", "Running Shoes"],
+    title: "Gadgets",
+    links: ["All Gadgets", "Phones", "Tablets", "Accessories"],
   },
   {
-    title: "Clothing",
-    links: ["All Clothing", "Modest Wear", "Hoodies & Pullovers", "Shirts & Tops"],
+    title: "Support",
+    links: ["Help Center", "Shipping", "Returns", "Warranty"],
   },
   {
-    title: "Kids'",
-    links: ["Infant & Toddler Shoes", "Kids' Shoes", "Kids' Jordan Shoes", "Kids' Basketball Shoes"],
+    title: "Company",
+    links: ["About Us", "Careers", "Press", "Contact"],
   },
 ] as const;
 
@@ -26,7 +26,7 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 items-start gap-8 md:grid-cols-12">
           <div className="flex items-start md:col-span-3">
-            <Image src="/logo.svg" alt="Nike" width={48} height={48} />
+            <Image src="/logo.svg" alt="Kairos" width={48} height={48} />
           </div>
 
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 md:col-span-7">
@@ -73,10 +73,10 @@ export default function Footer() {
           <div className="flex items-center gap-3 text-caption">
             <Image src="/globe.svg" alt="" width={16} height={16} />
             <span>Croatia</span>
-            <span>© 2025 Nike, Inc. All Rights Reserved</span>
+            <span>© 2025 Kairos, Inc. All Rights Reserved</span>
           </div>
           <ul className="flex items-center gap-6 text-caption">
-            {["Guides", "Terms of Sale", "Terms of Use", "Nike Privacy Policy"].map((t) => (
+            {["Guides", "Terms of Sale", "Terms of Use", "Privacy Policy"].map((t) => (
               <li key={t}>
                 <Link href="#">{t}</Link>
               </li>
