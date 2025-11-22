@@ -7,7 +7,7 @@ import {
   type InsertProduct, type InsertVariant, type InsertProductImage,
 } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
-import { mkdirSync, existsSync, cpSync } from 'fs';
+import { mkdirSync, existsSync, cpSync, readdirSync } from 'fs';
 import { join, basename } from 'path';
 import CATEGORIES from '@/lib/constants/categories';
 type ProductRow = typeof products.$inferSelect;
@@ -34,7 +34,7 @@ function randInt(min: number, max: number) {
 
 async function seed() {
   try {
-    log('Seeding filters: device types, conditions, capacities');
+    log('Seeding filters: device types, conditions, sizes, brands, categories');
 
     const genderRows = CATEGORIES.map((c) => insertGenderSchema.parse({ label: c.label, slug: c.slug }));
     for (const row of genderRows) {
@@ -42,45 +42,42 @@ async function seed() {
       if (!exists.length) await db.insert(genders).values(row);
     }
 
-    // colors removed from schema; seeding conditions instead
-    const conditionRows = [
-      { name: 'New', slug: 'new' },
-      { name: 'Used', slug: 'used' },
-      { name: 'Refurbished', slug: 'refurbished' },
-    ].map((c) => ({ name: c.name, slug: c.slug }));
+    // seed a single default condition (we will use sizes to represent New/Used/Refurbished)
+    const conditionRows = [{ name: 'Default', slug: 'default' }].map((c) => ({ name: c.name, slug: c.slug }));
     for (const row of conditionRows) {
       const exists = await db.select().from(conditions).where(eq(conditions.slug, row.slug)).limit(1);
       if (!exists.length) await db.insert(conditions).values(row as any);
     }
 
+    // sizes now represent device condition values: New/Used/Refurbished
     const sizeRows = [
-      { name: '64GB', slug: '64gb', sortOrder: 0 },
-      { name: '128GB', slug: '128gb', sortOrder: 1 },
-      { name: '256GB', slug: '256gb', sortOrder: 2 },
-      { name: '512GB', slug: '512gb', sortOrder: 3 },
-      { name: '1TB', slug: '1tb', sortOrder: 4 },
+      { name: 'New', slug: 'new', sortOrder: 0 },
+      { name: 'Used', slug: 'used', sortOrder: 1 },
+      { name: 'Refurbished', slug: 'refurbished', sortOrder: 2 },
     ].map((s) => insertSizeSchema.parse(s));
     for (const row of sizeRows) {
       const exists = await db.select().from(sizes).where(eq(sizes.slug, row.slug)).limit(1);
       if (!exists.length) await db.insert(sizes).values(row);
     }
 
-    log('Seeding brand: Kairos');
-    const brand = insertBrandSchema.parse({ name: 'Kairos', slug: 'kairos', logoUrl: undefined });
-    {
-      const exists = await db.select().from(brands).where(eq(brands.slug, brand.slug)).limit(1);
-      if (!exists.length) await db.insert(brands).values(brand);
+    log('Seeding brands');
+    const brandRows = [
+      { name: 'Kairos', slug: 'kairos' },
+      { name: 'Acme', slug: 'acme' },
+      { name: 'Generic', slug: 'generic' },
+    ].map((b) => insertBrandSchema.parse({ name: b.name, slug: b.slug, logoUrl: undefined }));
+    for (const row of brandRows) {
+      const exists = await db.select().from(brands).where(eq(brands.slug, row.slug)).limit(1);
+      if (!exists.length) await db.insert(brands).values(row as any);
     }
 
-    log('Seeding categories');
-    const catRows = [
-      { name: 'Gadgets', slug: 'gadgets', parentId: null },
-      { name: 'Phones', slug: 'phones', parentId: null },
-      { name: 'Accessories', slug: 'accessories', parentId: null },
-    ].map((c) => insertCategorySchema.parse(c));
+    log('Seeding categories from centralized list');
+    const catRows = CATEGORIES.map((c) =>
+      insertCategorySchema.parse({ name: c.label, slug: c.slug, parentId: null })
+    );
     for (const row of catRows) {
       const exists = await db.select().from(categories).where(eq(categories.slug, row.slug)).limit(1);
-      if (!exists.length) await db.insert(categories).values(row);
+      if (!exists.length) await db.insert(categories).values(row as any);
     }
 
     log('Seeding collections');
@@ -108,13 +105,28 @@ async function seed() {
       mkdirSync(uploadsRoot, { recursive: true });
     }
 
-    const sourceDir = join(process.cwd(), 'public', 'shoes');
+    // prefer public/gadgets if available, else fallback to public/shoes
+    const candidateDirs = [join(process.cwd(), 'public', 'gadgets'), join(process.cwd(), 'public', 'shoes')];
+    let sourceDir = candidateDirs.find((d) => existsSync(d)) ?? candidateDirs[candidateDirs.length - 1];
     const productNames = Array.from({ length: 15 }, (_, i) => `Kairos Gadget ${i + 1}`);
 
-    const sourceImages = [
-      'shoe-5.avif','shoe-6.avif','shoe-7.avif','shoe-8.avif','shoe-9.avif',
-      'shoe-10.avif','shoe-11.avif','shoe-12.avif','shoe-13.avif','shoe-14.avif','shoe-15.avif',
-    ];
+    // gather source images from the sourceDir if present
+    let sourceImages: string[] = [];
+    try {
+      sourceImages = readdirSync(sourceDir).filter((f) => /\.(avif|jpe?g|png)$/i.test(f));
+    } catch (e) {
+      sourceImages = [];
+    }
+    if (!sourceImages.length) {
+      sourceImages = [
+        'shoe-5.avif','shoe-6.avif','shoe-7.avif','shoe-8.avif','shoe-9.avif',
+        'shoe-10.avif','shoe-11.avif','shoe-12.avif','shoe-13.avif','shoe-14.avif','shoe-15.avif',
+      ];
+      // adjust the sourceDir to the original fallback if those files exist there
+      if (!existsSync(join(sourceDir, sourceImages[0]))) {
+        sourceDir = join(process.cwd(), 'public', 'shoes');
+      }
+    }
 
     log('Creating products with variants and images');
     for (let i = 0; i < productNames.length; i++) {
