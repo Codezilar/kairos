@@ -69,13 +69,38 @@ export async function signUp(formData: FormData) {
 
   const data = signUpSchema.parse(rawData);
 
-  const res = await auth.api.signUpEmail({
-    body: {
-      email: data.email,
-      password: data.password,
-      name: data.name,
-    },
-  });
+  async function withRetries<T>(fn: () => Promise<T>, attempts = 2, delay = 500): Promise<T> {
+    let lastErr: any;
+    for (let i = 0; i < attempts; i++) {
+      try {
+        return await fn();
+      } catch (e) {
+        lastErr = e;
+        if (i < attempts - 1) {
+          await new Promise((r) => setTimeout(r, delay));
+          delay *= 2;
+        }
+      }
+    }
+    throw lastErr;
+  }
+
+  let res;
+  try {
+    res = await withRetries(() =>
+      auth.api.signUpEmail({
+        body: {
+          email: data.email,
+          password: data.password,
+          name: data.name,
+        },
+      })
+    );
+  } catch (e) {
+    console.error('signUp: failed to call auth.api.signUpEmail', e);
+    // Re-throw a clearer error for upstream handlers
+    throw new Error('Unable to connect to the database/auth service. Please check your DATABASE_URL and network connectivity.');
+  }
 
   await migrateGuestToUser();
   return { ok: true, userId: res.user?.id };
@@ -94,12 +119,36 @@ export async function signIn(formData: FormData) {
 
   const data = signInSchema.parse(rawData);
 
-  const res = await auth.api.signInEmail({
-    body: {
-      email: data.email,
-      password: data.password,
-    },
-  });
+  async function withRetriesSignIn<T>(fn: () => Promise<T>, attempts = 2, delay = 500): Promise<T> {
+    let lastErr: any;
+    for (let i = 0; i < attempts; i++) {
+      try {
+        return await fn();
+      } catch (e) {
+        lastErr = e;
+        if (i < attempts - 1) {
+          await new Promise((r) => setTimeout(r, delay));
+          delay *= 2;
+        }
+      }
+    }
+    throw lastErr;
+  }
+
+  let res;
+  try {
+    res = await withRetriesSignIn(() =>
+      auth.api.signInEmail({
+        body: {
+          email: data.email,
+          password: data.password,
+        },
+      })
+    );
+  } catch (e) {
+    console.error('signIn: failed to call auth.api.signInEmail', e);
+    throw new Error('Unable to connect to the database/auth service. Please check your DATABASE_URL and network connectivity.');
+  }
 
   await migrateGuestToUser();
   return { ok: true, userId: res.user?.id };
