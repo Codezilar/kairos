@@ -59,7 +59,7 @@ export function Container({ categoryName }) {
     <div className="flex justify-center">
       <BackgroundGradient className="flex flex-col items-center rounded-[22px] w-full max-w-[20rem] p-4 sm:p-10 bg-pink-50 dark:bg-zinc-900">
         <img
-          src="/shoe5.svg"
+          src="/onestopshop.png"
           alt="No posts"
           height="400"
           width="400"
@@ -128,7 +128,7 @@ export function Container({ categoryName }) {
                   className="object-contain"
                 />
                 <p className="text-base sm:text-xl text-black mt-4 mb-2 dark:text-neutral-200 text-center">
-                  {post.title}
+                  {post.title || `No ${post.title} Posts Yet`}
                 </p>
                 <p className="text-sm text-neutral-600 dark:text-neutral-400 text-center">
                   {post.content}
