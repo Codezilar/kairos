@@ -21,6 +21,9 @@ const page = () => {
       <Container categoryName="Metal Work Tools & Equipment | Quality Metalworking Supplies" />
       <Container categoryName="Electrical Tools & Equipment | Professional & DIY Use" />
       <Container categoryName="Woodwork Tools & Equipment | Quality Woodworking Supplies" />
+      <Container categoryName="Home Appliances & Household Electronics" />
+      <Container categoryName="Kitchen Appliances & Home Essentials" />
+      <Container categoryName="Office Appliances" />
       
       <ForYou />
       {/* <Grid /> */}
