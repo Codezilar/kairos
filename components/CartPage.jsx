@@ -117,9 +117,13 @@ const CartPage = () => {
             >
               Continue Shopping
             </Link>
-            <button className="flex-1 bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600">
+            <Link
+              href="https://wa.me/+2347043301007/"
+              target="_blank"
+              className="flex-1 bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600"
+            >
               Proceed to Checkout
-            </button>
+            </Link>
           </div>
         </div>
       </div>
